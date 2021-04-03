@@ -1,0 +1,25 @@
+.graph-preview {
+    display: flex;
+    width: 200px;
+    height: 200px;
+    border-radius: 5px;
+    border: 1px solid #000;
+    margin: 25px;
+    background-color: #fff;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+
+    &:hover {
+        filter: brightness(85%);
+    }
+
+    p {
+        margin: auto;
+        padding: 0 0 0 13px;
+        text-align: center;
+        justify-content: center;
+        font-size: 46pt;
+        font-family: 'Courier New', Courier, monospace;
+    }
+}

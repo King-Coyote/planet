@@ -1,26 +1,20 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import Node from './components/Node';
+import GraphGrid from './components/GraphGrid'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div id="app">
+      <h1>planet</h1>
+      <GraphGrid 
+      
+      />
     </div>
   );
 }
 
 export default App;
+
+// Opening screen: name then a grid of saved graphs
+// clicking on a grid item takes you to that graph
