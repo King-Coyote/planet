@@ -15,11 +15,21 @@ const Graph: React.FC<IGraphProps> = (props: IGraphProps) => {
         dispatch({type: 'RENAME_GRAPH', graph_id: props.graph.uuid, name: new_name});
     }
 
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key !== 'Enter') {
+            return;
+        }
+        (e.currentTarget as HTMLElement).blur();
+    }
+
     return (
         <div className='graph'>
             <h1 
                 contentEditable 
                 onBlur={handleBlur}
+                onKeyDown={handleKeyPress}
+                suppressContentEditableWarning={true}
+                spellCheck={false}
             >
                 {props.graph.name}
             </h1>
