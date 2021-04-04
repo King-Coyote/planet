@@ -15,10 +15,8 @@ const GraphGrid: React.FC<IGraphGridProps> = (props: IGraphGridProps) => {
     const {graphs} = React.useContext(AppContext);
 
     return (
-        <div 
-            className='graph-grid'
-        >
-            {graphs.map(g => {
+        <div className='graph-grid'>
+            {Object.values(graphs).map(g => {
                 return <GraphPreview 
                     graph={g}
                 />

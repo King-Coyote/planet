@@ -13,12 +13,12 @@ const GraphAddButton: React.FC<IGraphAddButtonProps> = (props: IGraphAddButtonPr
     const {dispatch} = React.useContext(AppContext);
     
     const handleOnClick = (e: React.MouseEvent) => {
-        dispatch({type: 'NEW_GRAPH'});
+        dispatch({type: 'NEW_GRAPH', name: ''});
     }
 
     return (
         <div 
-            className="graph-preview"
+            className="graph-preview graph-add-button"
             onClick={handleOnClick}
         >
             <p>+</p>

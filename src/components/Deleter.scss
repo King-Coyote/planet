@@ -1,0 +1,31 @@
+@use '../global_sass/colors';
+
+$size: 100px;
+
+.deleter-outer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.deleter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: $size;
+    width: $size;
+    border-radius: 100%;
+    background-color: rgba(200, 0, 25, 0.5);
+    margin: auto;
+
+    p {
+        text-align: right;
+        font-size: $size / 4;
+        font-family: 'Courier New', Courier, monospace;
+        letter-spacing: normal;
+        color: #fff;
+    }
+}
