@@ -41,6 +41,12 @@ export const appstate_reducer = (state: AppState, action: Action) => {
                 currentGraph: ''
             };
             break;
+        case 'NEW_NODE':
+            new_state = new_node(state, action);
+            break;
+        case 'SET_NODE_POS':
+            new_state = set_node_pos(state, action);
+            break;
         default:
             throw new Error();
     }
@@ -77,6 +83,46 @@ const rename_graph = (state: AppState, action: Action): AppState => {
         graphs: {
             ...state.graphs,
             [new_graph.uuid]: new_graph
+        }
+    };
+}
+
+const new_node = (state: AppState, action: Action): AppState => {
+    const uuid = uuidv4();
+    const graph = state.graphs[action.graph_id];
+    const new_node = {
+        uuid: uuid,
+        text: '',
+        neighbors: [],
+        position: action.position,
+    };
+    const updated_graph = {
+        ...graph,
+        nodes: [...graph.nodes, uuid]
+    };
+    return {
+        ...state,
+        nodes: {
+            ...state.nodes,
+            [uuid]: new_node,
+        },
+        graphs: {
+            ...state.graphs,
+            [updated_graph.uuid]: updated_graph
+        }
+    };
+}
+
+const set_node_pos = (state: AppState, action: Action): AppState => {
+    const updated_node = {
+        ...state.nodes[action.node_id],
+        position: action.pos
+    };
+    return {
+        ...state,
+        nodes: {
+            ...state.nodes,
+            [action.node_id]: updated_node
         }
     };
 }
