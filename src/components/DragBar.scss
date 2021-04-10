@@ -1,0 +1,11 @@
+.dragbar {
+    background-color: black;
+    border-radius: 10px;
+    width: 100%;
+    height: 3px;
+    transition: height 200ms ease-out;
+    cursor: move;
+    position: absolute;
+    left: 0;
+    top: 0;
+}

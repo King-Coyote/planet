@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
+import DragBar from './DragBar';
 
 interface INodeProps {
     node: Types.Node;
@@ -8,7 +9,6 @@ interface INodeProps {
 
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
     const [position, setPosition] = React.useState<Types.Pos>(props.node?.position);
-    const [isDragging, setIsDragging] = React.useState(false);
     const [isEditing, setIsEditing] = React.useState(false);
 
     const textInput = React.useRef<HTMLDivElement>(null);
@@ -23,24 +23,16 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
 
     }
 
-    const handleMouseDown = (e: React.MouseEvent) => {
-        if (!isEditing)
-            setIsDragging(true);
-    }
-    
-    const handleMouseUp = (e: React.MouseEvent): void => {
-        setIsDragging(false);
-        dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, pos: position});
-    }
-
-    const handleDrag = (e: React.MouseEvent): void => {
-        if (!isDragging || isEditing)
-            return;
+    const handleDrag = (delta: Types.Pos): void => {
         const newPos = {
-            x: position.x + e.movementX,
-            y: position.y + e.movementY
+            x: position.x - delta.x,
+            y: position.y - delta.y
         };
         setPosition(newPos);
+    }
+
+    const handleDragStop = (e: MouseEvent) => {
+        dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: position});
     }
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
@@ -60,6 +52,9 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     }
 
     const getTransform = (): string => {
+        if (!position) {
+            console.log('shit aint found capn');
+        }
         return position
             ? `translate(${position.x}px, ${position.y}px)`
             : '';
@@ -68,22 +63,18 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     return (
         <div 
             className="node" 
-            // onMouseDown={handleMouseDown}
-            // onMouseOut={handleMouseUp}
-            // onMouseMove={handleDrag}
-            // onMouseUp={handleMouseUp}
             onDoubleClick={handleDoubleClick}
             style={{transform: getTransform()}}
         >
-            <div 
-                className='node-dragbar'
-            ></div>
+            <DragBar 
+                handleDrag={handleDrag}
+                handleDragStop={handleDragStop}
+            />
             <div 
                 className='node-editable'
                 contentEditable
                 ref={textInput}
             >
-
             </div>
             {/* <form>
                 <textarea 

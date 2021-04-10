@@ -50,7 +50,10 @@ const Graph: React.FC<IGraphProps> = (props: IGraphProps) => {
             >
                 {props.graph.name}
             </h1>
-            <div className='graph-workarea' onContextMenu={handleRightClickWorkArea}>
+            <div 
+                className='graph-workarea' 
+                onContextMenu={handleRightClickWorkArea}
+            >
                 {get_nodes()}
             </div>
         </div>

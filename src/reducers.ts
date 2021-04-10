@@ -116,7 +116,7 @@ const new_node = (state: AppState, action: Action): AppState => {
 const set_node_pos = (state: AppState, action: Action): AppState => {
     const updated_node = {
         ...state.nodes[action.node_id],
-        position: action.pos
+        position: action.position
     };
     return {
         ...state,
