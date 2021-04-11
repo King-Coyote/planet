@@ -12,22 +12,28 @@ const DragBar: React.FC<IDragBarProps> = (props: IDragBarProps) => {
     const [isDragging, setIsDragging] = React.useState(false);
     const [lastClientPos, setLastClientPos] = React.useState({x:0, y:0});
 
-    React.useEffect(() => {
-        const mouse_up = (e: MouseEvent) => {
-            setIsDragging(false);
-            props.handleDragStop(e);
+    // const mouse_up = React.useCallback((e: MouseEvent) => {
+    //     setIsDragging(false);
+    //     props.handleDragStop(e);
+    // }, [lastClientPos]);
+
+    const mouse_move = React.useCallback((e: MouseEvent) => {
+        const delta: Pos = {
+            x: lastClientPos.x - e.clientX,
+            y: lastClientPos.y - e.clientY
         };
-        const mouse_move = (e: MouseEvent) => {
-            const delta: Pos = {
-                x: lastClientPos.x - e.clientX,
-                y: lastClientPos.y - e.clientY
-            };
-            setLastClientPos({x: e.clientX, y: e.clientY});
-            props.handleDrag(delta);
-        }
+        setLastClientPos({x: e.clientX, y: e.clientY});
+        props.handleDrag(delta);
+    }, [lastClientPos]);
+
+    React.useEffect(() => {
         const on_drag_stop = () => {
             window.removeEventListener('mousemove', mouse_move);
             window.removeEventListener('mouseup', mouse_up);
+        };
+        const mouse_up = (e: MouseEvent) => {
+            setIsDragging(false);
+            props.handleDragStop(e);
         };
         if (isDragging) {
             window.addEventListener('mousemove', mouse_move);

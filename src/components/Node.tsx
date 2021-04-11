@@ -23,6 +23,10 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
 
     }
 
+    React.useEffect(() => {
+        console.log(`position changed to ${position.y},${position.y}`);
+    }, [position]);
+
     const handleDrag = (delta: Types.Pos): void => {
         const newPos = {
             x: position.x - delta.x,
@@ -31,9 +35,10 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         setPosition(newPos);
     }
 
-    const handleDragStop = (e: MouseEvent) => {
+    const handleDragStop = React.useCallback((e: MouseEvent) => {
+        console.log(`saving pos: ${position.x},${position.y}`);
         dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: position});
-    }
+    }, [position]);
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);
@@ -52,9 +57,6 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     }
 
     const getTransform = (): string => {
-        if (!position) {
-            console.log('shit aint found capn');
-        }
         return position
             ? `translate(${position.x}px, ${position.y}px)`
             : '';
