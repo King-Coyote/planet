@@ -9,17 +9,16 @@ interface INodeProps {
 }
 
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
+    const {dispatch} = React.useContext(AppContext);
     const [isEditing, setIsEditing] = React.useState(false);
     const {
         translation,
-        handleMouseUp,
-        handleMouseMove,
+        last_translation,
         handleMouseDown,
-    } = useDrag({x: 0, y: 0});
+    } = useDrag(props.node.position);
 
     const textInput = React.useRef<HTMLDivElement>(null);
 
-    const {dispatch} = React.useContext(AppContext);
 
     const handleChange = () => {
         
@@ -28,6 +27,10 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     const handleSubmit = () => {
 
     }
+
+    React.useEffect(() => {
+        dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: last_translation});
+    }, [last_translation]);
 
     // React.useEffect(() => {
     //     console.log(`position changed to ${position.y},${position.y}`);
@@ -77,9 +80,6 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             <div 
                 className='dragbar'
                 onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseMove}
-                onMouseUp={handleMouseUp}
             ></div>
             <div 
                 className='node-editable'

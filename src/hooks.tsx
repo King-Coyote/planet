@@ -3,61 +3,68 @@ import * as React from 'react';
 
 interface DragState {
     is_dragging: boolean;
-    origin: Pos;
+    client_origin: Pos;
     translation: Pos;
-    last_translation: Pos;
+    trans_origin: Pos;
 }
 
 const useDrag = (startPos: Pos) => {
     const [dragState, setDragState] = React.useState<DragState>({
         is_dragging: false,
-        origin: {x: 0, y: 0},
+        client_origin: {x: 0, y: 0},
         translation: startPos,
-        last_translation: startPos
+        trans_origin: startPos
     });
 
-    const {is_dragging, translation} = dragState;
+    const {is_dragging, translation, trans_origin} = dragState;
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!is_dragging) {
             setDragState({
                 ...dragState,
                 is_dragging: true,
-                origin: {x: e.clientX, y: e.clientY}
+                client_origin: {x: e.clientX, y: e.clientY}
             });
         }
     };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handleMouseMove = React.useCallback((e: MouseEvent) => {
         if (!is_dragging) {
             return;
         }
-        const {origin, last_translation} = dragState;
+        const {client_origin, trans_origin} = dragState;
         setDragState({
             ...dragState,
             translation: {
-                x: Math.abs(e.clientX - (origin.x + last_translation.x)),
-                y: Math.abs(e.clientY - (origin.y + last_translation.y))
+                x: Math.abs(e.clientX - (client_origin.x - trans_origin.x)),
+                y: Math.abs(e.clientY - (client_origin.y - trans_origin.y))
             }
         });
-    }
+    }, [is_dragging]);
 
-    const handleMouseUp = (e: React.MouseEvent) => {
-        if (!is_dragging) {
-            return;
-        }
+    const handleMouseUp = React.useCallback((e: MouseEvent) => {
         const {translation} = dragState;
         setDragState({
             ...dragState,
             is_dragging: false,
-            last_translation: {x: translation.x, y: translation.y}
+            trans_origin: {x: translation.x, y: translation.y}
         });
-    }
+    }, [is_dragging, translation]);
+
+    React.useEffect(() => {
+        if (is_dragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [is_dragging, handleMouseUp, handleMouseMove]);
 
     return {
         translation,
-        handleMouseUp,
-        handleMouseMove,
+        last_translation: trans_origin,
         handleMouseDown,
     };
 }

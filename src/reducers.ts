@@ -74,9 +74,11 @@ const new_graph = (state: AppState, action: Action): AppState => {
 }
 
 const rename_graph = (state: AppState, action: Action): AppState => {
+    const {graph_id, name} = action;
+    console.log(`Renaming graph ${graph_id} to ${name}`);
     let new_graph = {
-        ...state.graphs[action.graph_id],
-        name: action.name
+        ...state.graphs[graph_id],
+        name: name
     };
     return {
         ...state,
@@ -114,15 +116,17 @@ const new_node = (state: AppState, action: Action): AppState => {
 }
 
 const set_node_pos = (state: AppState, action: Action): AppState => {
+    const {node_id, position} = action;
     const updated_node = {
-        ...state.nodes[action.node_id],
-        position: action.position
+        ...state.nodes[node_id],
+        position: position
     };
+    console.log(`setting node ${action.node_id} pos to ${position.x},${position.y}`);
     return {
         ...state,
         nodes: {
             ...state.nodes,
-            [action.node_id]: updated_node
+            [node_id]: updated_node
         }
     };
 }
