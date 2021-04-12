@@ -31,6 +31,9 @@ export const appstate_reducer = (state: AppState, action: Action) => {
         case 'SET_NODE_POS':
             new_state = set_node_pos(state, action);
             break;
+        case 'SET_NODE_SIZE':
+            new_state = set_node_size(state, action);
+            break;
         default:
             throw new Error();
     }
@@ -118,6 +121,23 @@ const set_node_pos = (state: AppState, action: Action): AppState => {
     const updated_node = {
         ...state.nodes[node_id],
         position: position
+    };
+    return {
+        ...state,
+        nodes: {
+            ...state.nodes,
+            [node_id]: updated_node
+        }
+    };
+}
+
+const set_node_size = (state: AppState, action: Action): AppState => {
+    const {node_id, width, height} = action;
+    console.log(`Setting node ${node_id} width,height to ${width},${height}`);
+    const updated_node = {
+        ...state.nodes[node_id],
+        width: width,
+        height: height
     };
     return {
         ...state,

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
 import DragBar from './DragBar';
-import {useDrag} from '../hooks';
+import {useDrag, useResize} from '../hooks';
 
 interface INodeProps {
     node: Types.Node;
@@ -18,36 +18,11 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     } = useDrag(props.node.position);
 
     const textInput = React.useRef<HTMLDivElement>(null);
-
-
-    const handleChange = () => {
-        
-    }
-
-    const handleSubmit = () => {
-
-    }
+    const nodeRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: last_translation});
     }, [last_translation]);
-
-    // React.useEffect(() => {
-    //     console.log(`position changed to ${position.y},${position.y}`);
-    // }, [position]);
-
-    // const handleDrag = (delta: Types.Pos): void => {
-    //     const newPos = {
-    //         x: position.x - delta.x,
-    //         y: position.y - delta.y
-    //     };
-    //     setPosition(newPos);
-    // }
-
-    // const handleDragStop = React.useCallback((e: MouseEvent) => {
-    //     console.log(`saving pos: ${position.x},${position.y}`);
-    //     dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: position});
-    // }, [position]);
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);
@@ -65,6 +40,14 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         setIsEditing(false);
     }
 
+    const handleResize = () => {
+    }
+    const handleResizeEnd = () => {
+        if (!!width && !!height)
+            dispatch({type: 'SET_NODE_SIZE', node_id: props.node.uuid, width: width, height: height});
+    }
+    const [width, height] = useResize(props.node.uuid, handleResize, handleResizeEnd);
+
     const getTransform = (): string => {
         return translation
             ? `translate(${translation.x}px, ${translation.y}px)`
@@ -74,8 +57,13 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     return (
         <div 
             className="node" 
+            id={props.node.uuid} 
             onDoubleClick={handleDoubleClick}
-            style={{transform: getTransform()}}
+            style={{
+                transform: getTransform(),
+                width: width ? `${width}px` : '',
+                height: height ? `${height}px` : '',
+            }}
         >
             <div 
                 className='dragbar'
