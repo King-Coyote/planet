@@ -2,14 +2,20 @@ import React, { useEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
 import DragBar from './DragBar';
+import {useDrag} from '../hooks';
 
 interface INodeProps {
     node: Types.Node;
 }
 
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
-    const [position, setPosition] = React.useState<Types.Pos>(props.node?.position);
     const [isEditing, setIsEditing] = React.useState(false);
+    const {
+        translation,
+        handleMouseUp,
+        handleMouseMove,
+        handleMouseDown,
+    } = useDrag({x: 0, y: 0});
 
     const textInput = React.useRef<HTMLDivElement>(null);
 
@@ -23,22 +29,22 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
 
     }
 
-    React.useEffect(() => {
-        console.log(`position changed to ${position.y},${position.y}`);
-    }, [position]);
+    // React.useEffect(() => {
+    //     console.log(`position changed to ${position.y},${position.y}`);
+    // }, [position]);
 
-    const handleDrag = (delta: Types.Pos): void => {
-        const newPos = {
-            x: position.x - delta.x,
-            y: position.y - delta.y
-        };
-        setPosition(newPos);
-    }
+    // const handleDrag = (delta: Types.Pos): void => {
+    //     const newPos = {
+    //         x: position.x - delta.x,
+    //         y: position.y - delta.y
+    //     };
+    //     setPosition(newPos);
+    // }
 
-    const handleDragStop = React.useCallback((e: MouseEvent) => {
-        console.log(`saving pos: ${position.x},${position.y}`);
-        dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: position});
-    }, [position]);
+    // const handleDragStop = React.useCallback((e: MouseEvent) => {
+    //     console.log(`saving pos: ${position.x},${position.y}`);
+    //     dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: position});
+    // }, [position]);
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);
@@ -57,8 +63,8 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     }
 
     const getTransform = (): string => {
-        return position
-            ? `translate(${position.x}px, ${position.y}px)`
+        return translation
+            ? `translate(${translation.x}px, ${translation.y}px)`
             : '';
     }
 
@@ -68,24 +74,18 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             onDoubleClick={handleDoubleClick}
             style={{transform: getTransform()}}
         >
-            <DragBar 
-                handleDrag={handleDrag}
-                handleDragStop={handleDragStop}
-            />
+            <div 
+                className='dragbar'
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseMove}
+                onMouseUp={handleMouseUp}
+            ></div>
             <div 
                 className='node-editable'
                 contentEditable
                 ref={textInput}
-            >
-            </div>
-            {/* <form>
-                <textarea 
-                    disabled={!isEditing} 
-                    ref={textInput}
-                    onBlur={handleBlur}
-                >
-                </textarea>
-            </form> */}
+            ></div>
         </div>
     );
 };
