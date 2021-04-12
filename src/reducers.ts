@@ -4,18 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 export const appstate_reducer = (state: AppState, action: Action) => {
     let new_state: AppState;
     switch (action.type) {
-        case 'SET_DRAG':
-            new_state = {
-                ...state,
-                currentlyDragging: action.uuid,
-            }
-            break;
-        case 'CLEAR_DRAG':
-            new_state = {
-                ...state,
-                currentlyDragging: ''
-            }
-            break;
         case 'SET_APP_STAGE':
             new_state = {
                 ...state,
@@ -29,11 +17,7 @@ export const appstate_reducer = (state: AppState, action: Action) => {
             new_state = rename_graph(state, action);
             break;
         case 'LOAD_GRAPH':
-            console.log(`loading graph: ${action.graph_id}`)
-            new_state = {
-                ...state,
-                currentGraph: action.graph_id
-            };
+            new_state = load_graph(state, action);
             break;
         case 'UNLOAD_GRAPH':
             new_state = {
@@ -60,7 +44,9 @@ const save_state = (new_state: AppState) => {
 }
 
 const new_graph = (state: AppState, action: Action): AppState => {
+    const {name} = action;
     const uuid = uuidv4();
+    console.log(`Creating new graph ${uuid} with name "${name}"`);
     let graphs = {...state.graphs};
     graphs[uuid] = {
         name: action.name,
@@ -89,8 +75,19 @@ const rename_graph = (state: AppState, action: Action): AppState => {
     };
 }
 
+const load_graph = (state: AppState, action: Action): AppState => {
+    const {graph_id} = action;
+    console.log(`loading graph: ${graph_id}`)
+    return {
+        ...state,
+        currentGraph: action.graph_id
+    };
+}
+
 const new_node = (state: AppState, action: Action): AppState => {
+    const {graph_id, position} = action;
     const uuid = uuidv4();
+    console.log(`Creating new node ${uuid} under graph ${graph_id} at ${position.x},${position.y}`);
     const graph = state.graphs[action.graph_id];
     const new_node = {
         uuid: uuid,
@@ -117,11 +114,11 @@ const new_node = (state: AppState, action: Action): AppState => {
 
 const set_node_pos = (state: AppState, action: Action): AppState => {
     const {node_id, position} = action;
+    console.log(`setting node ${action.node_id} pos to ${position.x},${position.y}`);
     const updated_node = {
         ...state.nodes[node_id],
         position: position
     };
-    console.log(`setting node ${action.node_id} pos to ${position.x},${position.y}`);
     return {
         ...state,
         nodes: {
