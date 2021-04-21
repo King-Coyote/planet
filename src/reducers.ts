@@ -96,6 +96,7 @@ const new_node = (state: AppState, action: Action): AppState => {
         uuid: uuid,
         text: '',
         neighbors: [],
+        size: {width: 100, height: 75},
         position: action.position,
     };
     const updated_graph = {
@@ -136,8 +137,7 @@ const set_node_size = (state: AppState, action: Action): AppState => {
     console.log(`Setting node ${node_id} width,height to ${width},${height}`);
     const updated_node = {
         ...state.nodes[node_id],
-        width: width,
-        height: height
+        size: {width: width, height: height}
     };
     return {
         ...state,

@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
-import DragBar from './DragBar';
 import {useDrag, useResize} from '../hooks';
 
 interface INodeProps {
@@ -40,13 +39,22 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         setIsEditing(false);
     }
 
-    const handleResize = () => {
-    }
-    const handleResizeEnd = () => {
-        if (!!width && !!height)
+    const [width, height] = useResize(nodeRef);
+
+    let timeout_id: any;
+    React.useEffect(() => {
+        timeout_id = setTimeout(() => {
             dispatch({type: 'SET_NODE_SIZE', node_id: props.node.uuid, width: width, height: height});
-    }
-    const [width, height] = useResize(props.node.uuid, handleResize, handleResizeEnd);
+        }, 200);
+        return () => clearTimeout(timeout_id);
+    }, [width, height]);
+
+    React.useEffect(() => {
+        if (!nodeRef?.current)
+            return;
+        nodeRef.current.style.width = `${props.node.size.width}px`;
+        nodeRef.current.style.height = `${props.node.size.height}px`;
+    }, [nodeRef]);
 
     const getTransform = (): string => {
         return translation
@@ -61,9 +69,8 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             onDoubleClick={handleDoubleClick}
             style={{
                 transform: getTransform(),
-                width: width ? `${width}px` : '',
-                height: height ? `${height}px` : '',
             }}
+            ref={nodeRef}
         >
             <div 
                 className='dragbar'

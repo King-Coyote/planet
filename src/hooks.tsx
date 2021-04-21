@@ -71,44 +71,40 @@ const useDrag = (startPos: Pos) => {
 
 
 interface ResizeState {
+    width: number | null | undefined;
+    height: number | null | undefined;
     running: boolean;
-    width: number;
-    height: number;
 }
 // watches for resizing of element, returns new dims if so
 const useResize = (
-    id: string, 
-    on_resize: () => void,
-    on_resize_end: () => void
+    ref: React.RefObject<HTMLElement>,
 ) => {
-    let has_mounted = !!document.getElementById(id);
-    let element = document.getElementById(id) || document.body;
+    const node: HTMLElement | null = ref.current; 
     const [state, setState] = React.useState<ResizeState>({
-        running: false, 
-        width: element.offsetWidth, 
-        height: element.offsetHeight
+        width: null, 
+        height: null,
+        running: false
     });
-    const {running, width, height} = state;
+    const {width, height, running} = state;
+    console.log(`initial hook state is ${width},${height}`);
 
     React.useEffect(() => {
+        if (!node) {
+            return;
+        }
         let raf: any;
-        let timeout_id: any;
         const aframe_callback = () => {
-            const {offsetWidth, offsetHeight} = element;
-            on_resize();
-            clearTimeout(timeout_id);
-            timeout_id = setTimeout(on_resize_end, 500);
+            console.log(`setting w,h to ${width},${height} via aframe callback`);
             setState({
-                running: false,
-                width: offsetWidth,
-                height: offsetHeight
+                running: true,
+                width: node?.offsetWidth,
+                height: node?.offsetHeight
             });
         };
 
         const handle_mutation = () => {
-            if (running) {
+            if (running)
                 return;
-            }
             setState({
                 ...state,
                 running: true
@@ -117,16 +113,17 @@ const useResize = (
         };
         
         const observer = new MutationObserver(handle_mutation);
-        observer.observe(element, { attributes: true, childList: true, subtree: true });
+        observer.observe((node as Node), { attributes: true, childList: true, subtree: true });
         handle_mutation();
 
         return () => {
             window.cancelAnimationFrame(raf);
             observer.disconnect();
         }
-    }, []);
+    }, [node]);
 
-    return has_mounted ? [width, height] : [null, null];
+    console.log(`Hook returning w,h  ${width},${height}`);
+    return [width, height];
 }
 
 export {useDrag, useResize};

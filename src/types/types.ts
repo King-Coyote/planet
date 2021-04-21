@@ -9,12 +9,18 @@ export interface Pos {
     y: number;
 }
 
+export interface Size {
+    width: number;
+    height: number;
+}
+
 export type AppStage = 'HOME' | 'GRAPH';
 
 export interface Node {
     uuid: string;
     text: string;
     position: Pos;
+    size: Size;
     neighbors: string[]; // node ids
 }
 
