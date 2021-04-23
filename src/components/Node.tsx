@@ -1,10 +1,17 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
+import {Size} from '../types/types';
 import {useDrag, useResize} from '../hooks';
 
 interface INodeProps {
     node: Types.Node;
+}
+
+const PADDING_PX: number = 7;
+
+const get_dim_for_css = (dim: number | null | undefined): string => {
+    return dim ? `${dim - PADDING_PX * 2}px` : '';
 }
 
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
@@ -39,23 +46,6 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         setIsEditing(false);
     }
 
-    const [width, height] = useResize(nodeRef);
-
-    let timeout_id: any;
-    React.useEffect(() => {
-        timeout_id = setTimeout(() => {
-            dispatch({type: 'SET_NODE_SIZE', node_id: props.node.uuid, width: width, height: height});
-        }, 200);
-        return () => clearTimeout(timeout_id);
-    }, [width, height]);
-
-    React.useEffect(() => {
-        if (!nodeRef?.current)
-            return;
-        nodeRef.current.style.width = `${props.node.size.width}px`;
-        nodeRef.current.style.height = `${props.node.size.height}px`;
-    }, [nodeRef]);
-
     const getTransform = (): string => {
         return translation
             ? `translate(${translation.x}px, ${translation.y}px)`
@@ -69,6 +59,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             onDoubleClick={handleDoubleClick}
             style={{
                 transform: getTransform(),
+                padding: `${PADDING_PX}px`,
             }}
             ref={nodeRef}
         >

@@ -1,4 +1,4 @@
-import {Pos} from './types/types';
+import {Pos, Size} from './types/types';
 import * as React from 'react';
 
 interface DragState {
@@ -73,7 +73,6 @@ const useDrag = (startPos: Pos) => {
 interface ResizeState {
     width: number | null | undefined;
     height: number | null | undefined;
-    running: boolean;
 }
 // watches for resizing of element, returns new dims if so
 const useResize = (
@@ -83,9 +82,8 @@ const useResize = (
     const [state, setState] = React.useState<ResizeState>({
         width: null, 
         height: null,
-        running: false
     });
-    const {width, height, running} = state;
+    const {width, height} = state;
     console.log(`initial hook state is ${width},${height}`);
 
     React.useEffect(() => {
@@ -94,21 +92,13 @@ const useResize = (
         }
         let raf: any;
         const aframe_callback = () => {
-            console.log(`setting w,h to ${width},${height} via aframe callback`);
             setState({
-                running: true,
-                width: node?.offsetWidth,
-                height: node?.offsetHeight
+                width: node?.clientWidth,
+                height: node?.clientHeight
             });
         };
 
         const handle_mutation = () => {
-            if (running)
-                return;
-            setState({
-                ...state,
-                running: true
-            });
             raf = window.requestAnimationFrame(aframe_callback);
         };
         
