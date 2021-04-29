@@ -1,0 +1,34 @@
+$handle_size: 10px;
+
+
+.resizable {
+
+    .resize-handle {
+        width: $handle_size;
+        height: $handle_size;
+        background-color: red;
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        cursor: nesw-resize;
+
+        &.handle-tl {
+            left: 0;
+            top: 0;
+            cursor: nwse-resize;
+        }
+        &.handle-tr {
+            left: calc(100% - #{$handle_size});
+            top: 0;
+        }
+        &.handle-br {
+            left: calc(100% - #{$handle_size});
+            top: calc(100% - #{$handle_size});
+            cursor: nwse-resize;
+        }
+        &.handle-bl {
+            left: 0;
+            top: calc(100% - #{$handle_size});
+        }
+    }
+}

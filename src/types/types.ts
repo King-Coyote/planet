@@ -14,6 +14,11 @@ export interface Size {
     height: number;
 }
 
+export interface Rect extends Size {
+    left: number;
+    top: number;
+};
+
 export type AppStage = 'HOME' | 'GRAPH';
 
 export interface Node {

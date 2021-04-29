@@ -1,4 +1,4 @@
-import {Pos, Size} from './types/types';
+import {Pos, Size, Rect} from './types/types';
 import * as React from 'react';
 
 interface DragState {
@@ -69,51 +69,157 @@ const useDrag = (startPos: Pos) => {
     };
 }
 
-
 interface ResizeState {
-    width: number | null | undefined;
-    height: number | null | undefined;
-}
-// watches for resizing of element, returns new dims if so
+    is_resizing: boolean;
+    client_origin: Pos,
+    origin_rect: Rect,
+};
+type MaybeRef = HTMLDivElement | null | undefined;
+type UseResizeReturn = [(e: React.MouseEvent) => void, Rect, (ref: HTMLDivElement) => void]
 const useResize = (
-    ref: React.RefObject<HTMLElement>,
-) => {
-    const node: HTMLElement | null = ref.current; 
+    direction: 'ne' | 'nw' | 'se' | 'sw'
+): UseResizeReturn => {
+    const [size, setSize] = React.useState<Size>({width: 0, height: 0});
     const [state, setState] = React.useState<ResizeState>({
-        width: null, 
-        height: null,
+        is_resizing: false,
+        client_origin: {x: 0, y: 0},
+        origin_rect: {left: 0, top: 0, width: 0, height: 0},
     });
-    const {width, height} = state;
-    console.log(`initial hook state is ${width},${height}`);
+    const [rect, setRect] = React.useState<Rect>({left: 0, top: 0, width: 0, height: 0});
+    let current: HTMLDivElement | null = null;
+    const ref = React.useCallback((ref: HTMLDivElement) => {
+        current = ref;
+    }, [current]);
 
-    React.useEffect(() => {
-        if (!node) {
+    if (current)
+        console.log(`current is ${current}`)
+
+    const {is_resizing, client_origin, origin_rect} = state;
+
+    const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
+        if (!current) {
             return;
         }
-        let raf: any;
-        const aframe_callback = () => {
-            setState({
-                width: node?.clientWidth,
-                height: node?.clientHeight
-            });
-        };
+        setState({
+            ...state,
+            client_origin: {x: e.clientX, y: e.clientY},
+            origin_rect: current.getBoundingClientRect(),
+            is_resizing: true,
+        });
+        console.log(`mouse down at ${e.clientX}, ${e.clientY}`);
+    }, [current]);
 
-        const handle_mutation = () => {
-            raf = window.requestAnimationFrame(aframe_callback);
-        };
-        
-        const observer = new MutationObserver(handle_mutation);
-        observer.observe((node as Node), { attributes: true, childList: true, subtree: true });
-        handle_mutation();
+    const handleMouseUp = (e: MouseEvent) => {
+        setState({
+            ...state,
+            is_resizing: false,
+        });
+        console.log('mouse up');
+    };
 
-        return () => {
-            window.cancelAnimationFrame(raf);
-            observer.disconnect();
+    const handleMouseMove = React.useCallback((e: MouseEvent) => {
+        if (!current) {
+            return;
         }
-    }, [node]);
+        const delta = {
+            x: client_origin.x - e.clientX,
+            y: client_origin.y - e.clientY
+        };
+        // resize rect thus:
+        // width and height + deltas.
+        // ne: top -= delta.y, left same
+        // nw: top -= delta.y, left -= delta.x
+        // sw: top same, left -= delta.x
+        // se: same same.
+        let new_rect: Rect = {
+            left: origin_rect.left,
+            top: origin_rect.top,
+            width: origin_rect.width - delta.x,
+            height: origin_rect.height - delta.y
+        }
+        switch (direction) {
+            case 'ne':
+                new_rect = {
+                    ...new_rect,
+                    top: new_rect.top - delta.y
+                };
+                break;
+            case 'nw':
+                new_rect = {
+                    ...new_rect,
+                    left: new_rect.left - delta.x,
+                    top: new_rect.top - delta.y
+                };
+                break;
+            case 'sw':
+                new_rect = {
+                    ...new_rect,
+                    left: new_rect.left - delta.x
+                };
+                break;
+        }
+        setRect(new_rect);
+        console.log(`New rect is ${Object.values(new_rect).join(',')}`);
+    }, [current]);
 
-    console.log(`Hook returning w,h  ${width},${height}`);
-    return [width, height];
-}
+    React.useEffect(() => {
+        if (is_resizing) {
+            document.addEventListener('mouseup', handleMouseUp);
+            document.addEventListener('mousemove', handleMouseMove);
+        }
+        return () => {
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [is_resizing]);
+
+    return [handleMouseDown, rect, ref];
+};
 
 export {useDrag, useResize};
+
+// interface ResizeState {
+//     width: number | null | undefined;
+//     height: number | null | undefined;
+// }
+// // watches for resizing of element, returns new dims if so
+// const useResize = (
+//     ref: React.RefObject<HTMLElement>,
+// ) => {
+//     const node: HTMLElement | null = ref.current; 
+//     const [state, setState] = React.useState<ResizeState>({
+//         width: null, 
+//         height: null,
+//     });
+//     const {width, height} = state;
+//     console.log(`initial hook state is ${width},${height}`);
+
+//     React.useEffect(() => {
+//         if (!node) {
+//             return;
+//         }
+//         let raf: any;
+//         const aframe_callback = () => {
+//             setState({
+//                 width: node?.clientWidth,
+//                 height: node?.clientHeight
+//             });
+//         };
+
+//         const handle_mutation = () => {
+//             raf = window.requestAnimationFrame(aframe_callback);
+//         };
+        
+//         const observer = new MutationObserver(handle_mutation);
+//         observer.observe((node as Node), { attributes: true, childList: true, subtree: true });
+//         handle_mutation();
+
+//         return () => {
+//             window.cancelAnimationFrame(raf);
+//             observer.disconnect();
+//         }
+//     }, [node]);
+
+//     console.log(`Hook returning w,h  ${width},${height}`);
+//     return [width, height];
+// }

@@ -2,16 +2,11 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
 import {Size} from '../types/types';
-import {useDrag, useResize} from '../hooks';
+import {useDrag} from '../hooks';
+import ResizableDiv from './ResizableDiv';
 
 interface INodeProps {
     node: Types.Node;
-}
-
-const PADDING_PX: number = 7;
-
-const get_dim_for_css = (dim: number | null | undefined): string => {
-    return dim ? `${dim - PADDING_PX * 2}px` : '';
 }
 
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
@@ -53,14 +48,10 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     }
 
     return (
-        <div 
+        <ResizableDiv
             className="node" 
             id={props.node.uuid} 
             onDoubleClick={handleDoubleClick}
-            style={{
-                transform: getTransform(),
-                padding: `${PADDING_PX}px`,
-            }}
             ref={nodeRef}
         >
             <div 
@@ -72,7 +63,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
                 contentEditable
                 ref={textInput}
             ></div>
-        </div>
+        </ResizableDiv>
     );
 };
 
