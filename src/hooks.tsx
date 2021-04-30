@@ -75,7 +75,7 @@ interface ResizeState {
     origin_rect: Rect,
 };
 type MaybeRef = HTMLDivElement | null | undefined;
-type UseResizeReturn = [(e: React.MouseEvent) => void, Rect, (ref: HTMLDivElement) => void]
+type UseResizeReturn = [Rect, (e: React.MouseEvent) => void, (ref: HTMLDivElement) => void]
 const useResize = (
     direction: 'ne' | 'nw' | 'se' | 'sw'
 ): UseResizeReturn => {
@@ -173,10 +173,39 @@ const useResize = (
         };
     }, [is_resizing]);
 
-    return [handleMouseDown, rect, ref];
+    return [rect, handleMouseDown, ref];
 };
 
-export {useDrag, useResize};
+interface TransformHooks {
+    rect: Rect | undefined;
+    draggable: any;
+    resizable: any;
+};
+const useTransform = (): TransformHooks => {
+    const [rect, setRect] = React.useState<Rect>();
+    // use draggable, use resizable, resolve both here.
+    const [resizeRect, handleMouseDownResize, resizeRef] = useResize('se');
+    const {translation, last_translation, handleMouseDown} = useDrag({x: 0, y: 0});
+
+    // resolve rect using these side effects
+    React.useEffect(() => {
+        setRect(resizeRect);
+    }, [resizeRect]);
+
+    const hooks: TransformHooks = {
+        rect: rect,
+        draggable: null,
+        resizable: {
+            //mouse down handlers and ref callbacks here
+            handleMouseDown: handleMouseDownResize,
+            ref: resizeRef
+        },
+    };
+
+    return hooks;
+};
+
+export {useDrag, useResize, useTransform};
 
 // interface ResizeState {
 //     width: number | null | undefined;

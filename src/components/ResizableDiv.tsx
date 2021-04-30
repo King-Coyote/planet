@@ -1,5 +1,5 @@
 import React from 'react';
-import {useResize} from '../hooks';
+import {useResize, useTransform} from '../hooks';
 
 // wants to add drag handles to each corner, and resize children
 const ResizableDiv: React.FC<any> = (props) => {
@@ -7,7 +7,10 @@ const ResizableDiv: React.FC<any> = (props) => {
         className,
         ...rest
     } = props;
-    const [handleMouseDown, rect, refSE] = useResize('se');
+    // const [handleMouseDown, rect, refSE] = useResize('se');
+    const transform = useTransform();
+    const rect = transform.rect ?? {left: 0, top: 0, width: 0, height: 0};
+    const {handleMouseDown, ref} = transform.resizable;
     return (
         <div 
             className={`resizable ${className}`}
@@ -22,7 +25,7 @@ const ResizableDiv: React.FC<any> = (props) => {
         >
             <div className='resize-handle handle-tl' ></div>
             <div className='resize-handle handle-tr' ></div>
-            <div className='resize-handle handle-br' onMouseDown={handleMouseDown} ref={refSE}></div>
+            <div className='resize-handle handle-br' onMouseDown={handleMouseDown} ref={ref}></div>
             <div className='resize-handle handle-bl' ></div>
             {props.children}
         </div>
