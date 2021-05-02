@@ -2,8 +2,7 @@ import React, { useEffect, useLayoutEffect } from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
 import {Size} from '../types/types';
-import {useDrag} from '../hooks';
-import ResizableDiv from './ResizableDiv';
+import useTransform from '../hooks/useTransform';
 
 interface INodeProps {
     node: Types.Node;
@@ -12,18 +11,16 @@ interface INodeProps {
 const Node: React.FC<INodeProps> = (props: INodeProps) => {
     const {dispatch} = React.useContext(AppContext);
     const [isEditing, setIsEditing] = React.useState(false);
-    const {
-        translation,
-        last_translation,
-        handleMouseDown,
-    } = useDrag(props.node.position);
+    
+    const transformable = React.useRef<HTMLDivElement>(null);
+    const transform = useTransform(transformable);
+    const rect = transform.rect ?? Types.DEFAULT_RECT;
 
     const textInput = React.useRef<HTMLDivElement>(null);
-    const nodeRef = React.useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
-        dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: last_translation});
-    }, [last_translation]);
+    // React.useEffect(() => {
+    //     dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: last_translation});
+    // }, [last_translation]);
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);
@@ -41,29 +38,50 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         setIsEditing(false);
     }
 
-    const getTransform = (): string => {
-        return translation
-            ? `translate(${translation.x}px, ${translation.y}px)`
-            : '';
-    }
-
     return (
-        <ResizableDiv
+        <div
             className="node" 
-            id={props.node.uuid} 
+            id={props.node.uuid}
             onDoubleClick={handleDoubleClick}
-            ref={nodeRef}
+            ref={transformable}
+            style={{
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height,
+            }}
         >
             <div 
                 className='dragbar'
-                onMouseDown={handleMouseDown}
+                onMouseDown={transform.drag_handler}
             ></div>
             <div 
                 className='node-editable'
                 contentEditable
                 ref={textInput}
             ></div>
-        </ResizableDiv>
+            <div></div>
+            <div 
+                className='resize-handle handle-nw' 
+                ref={transform.resizable.handles?.nw}
+                onMouseDown={transform.resizable.handler}
+            ></div>
+            <div 
+                className='resize-handle handle-ne' 
+                ref={transform.resizable.handles?.ne}
+                onMouseDown={transform.resizable.handler}
+            ></div>
+            <div 
+                className='resize-handle handle-se' 
+                ref={transform.resizable.handles?.se}
+                onMouseDown={transform.resizable.handler}
+            ></div>
+            <div 
+                className='resize-handle handle-sw' 
+                ref={transform.resizable.handles?.sw}
+                onMouseDown={transform.resizable.handler}
+            ></div>
+        </div>
     );
 };
 

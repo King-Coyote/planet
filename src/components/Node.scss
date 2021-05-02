@@ -1,3 +1,4 @@
+$handle_size: 10px;
 
 .node {
     border: 1px solid black;
@@ -62,5 +63,34 @@
   
     input:focus {
       outline: none;
+    }
+
+    .resize-handle {
+        width: $handle_size;
+        height: $handle_size;
+        background-color: red;
+        position: absolute;
+        margin: 0;
+        padding: 0;
+        cursor: nesw-resize;
+
+        &.handle-nw {
+            left: 0;
+            top: 0;
+            cursor: nwse-resize;
+        }
+        &.handle-ne {
+            left: calc(100% - #{$handle_size});
+            top: 0;
+        }
+        &.handle-se {
+            left: calc(100% - #{$handle_size});
+            top: calc(100% - #{$handle_size});
+            cursor: nwse-resize;
+        }
+        &.handle-sw {
+            left: 0;
+            top: calc(100% - #{$handle_size});
+        }
     }
   }
