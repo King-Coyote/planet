@@ -18,11 +18,9 @@ const useDrag = (transformable: MaybeElement): UseDragReturn => {
     const {origin_client_pos, origin_element_pos, is_dragging} = state;
 
     const handleMouseDown = React.useCallback((e: React.MouseEvent) => {
-        console.log('mouse down for drag...');
         if (!transformable) {
             return;
         }
-        console.log(`... node found. Starting drag state at ${e.clientX},${e.clientY}`);
         const bb = transformable.getBoundingClientRect();
         setState({
             ...state,
@@ -33,7 +31,6 @@ const useDrag = (transformable: MaybeElement): UseDragReturn => {
     }, [transformable]);
 
     const handleMouseUp = (e: MouseEvent) => {
-        console.log(`stopping drag.`);
         setState({
             ...state,
             is_dragging: false
@@ -41,7 +38,6 @@ const useDrag = (transformable: MaybeElement): UseDragReturn => {
     };
 
     const handleMouseMove = React.useCallback((e: MouseEvent) => {
-        console.log(`starting drag move at ${state.origin_client_pos.x},${state.origin_client_pos.y}...`);
         if (!transformable) {
             return;
         }
@@ -49,7 +45,6 @@ const useDrag = (transformable: MaybeElement): UseDragReturn => {
             x:  e.clientX - origin_client_pos.x,
             y:  e.clientY - origin_client_pos.y
         };
-        console.log(`... node found: dragging with delta ${delta.x},${delta.y}.`);
         setPos({
             x: origin_element_pos.x + delta.x,
             y: origin_element_pos.y + delta.y
