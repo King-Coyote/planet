@@ -96,7 +96,8 @@ const new_node = (state: AppState, action: Action): AppState => {
         neighbors: [],
         rect: {
             ...DEFAULT_RECT,
-            ...action.position,
+            left: action.position.x,
+            top: action.position.y
         }
     };
     const updated_graph = {
