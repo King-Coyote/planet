@@ -9,10 +9,6 @@ interface TransformHooks {
     resizable: any;
 };
 const useTransform = (transformable: React.RefObject<HTMLElement>): TransformHooks => {
-    // let current: MaybeElement;
-    // const ref = React.useCallback((ref: MaybeElement) => {
-    //     current = ref;
-    // }, [current]);
     const [rect, setRect] = React.useState<Rect>(DEFAULT_RECT);
 
     const resizeHooks = useResize(transformable.current);
@@ -20,23 +16,27 @@ const useTransform = (transformable: React.RefObject<HTMLElement>): TransformHoo
 
     // resolve rect using these side effects
     React.useEffect(() => {
-        setRect(resizeHooks.rect);
-    }, [resizeHooks.rect, dragPos]);
-    
-    React.useEffect(() => {
         setRect({
-            ...rect,
+            ...resizeHooks.size,
             left: dragPos.x,
             top: dragPos.y
         });
-    }, [resizeHooks.rect, dragPos]);
+    }, [resizeHooks.size, dragPos]);
+    
+    // React.useEffect(() => {
+    //     setRect({
+    //         ...rect,
+    //         left: dragPos.x,
+    //         top: dragPos.y
+    //     });
+    // }, [resizeHooks.rect, dragPos]);
 
     const hooks: TransformHooks = {
         rect: rect,
         drag_handler: handleMouseDownDrag,
         resizable: {
-            handler: resizeHooks.handler,
-            handles: resizeHooks.handles,
+            handler: resizeHooks.handleMouseDown,
+            handles: resizeHooks.handle,
         },
     };
 

@@ -62,23 +62,8 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             ></div>
             <div></div>
             <div 
-                className='resize-handle handle-nw' 
-                ref={transform.resizable.handles?.nw}
-                onMouseDown={transform.resizable.handler}
-            ></div>
-            <div 
-                className='resize-handle handle-ne' 
-                ref={transform.resizable.handles?.ne}
-                onMouseDown={transform.resizable.handler}
-            ></div>
-            <div 
                 className='resize-handle handle-se' 
-                ref={transform.resizable.handles?.se}
-                onMouseDown={transform.resizable.handler}
-            ></div>
-            <div 
-                className='resize-handle handle-sw' 
-                ref={transform.resizable.handles?.sw}
+                ref={transform.resizable.handle}
                 onMouseDown={transform.resizable.handler}
             ></div>
         </div>
