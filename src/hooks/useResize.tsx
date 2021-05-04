@@ -12,15 +12,15 @@ interface ResizeHooks {
     handle: HTMLElement | null | undefined;
     is_resizing: boolean;
 };
-const useResize = (transformable: MaybeElement): ResizeHooks => {
+const useResize = (transformable: MaybeElement, initial_rect: Rect): ResizeHooks => {
+    const [size, setSize] = React.useState<Size>({width: initial_rect.width, height: initial_rect.height});
     const [state, setState] = React.useState<ResizeState>({
         is_resizing: false,
         client_origin: {x: 0, y: 0},
-        origin_size: {width: 0, height: 0},
+        origin_size: size,
     });
     const {is_resizing, client_origin, origin_size} = state;
 
-    const [size, setSize] = React.useState<Size>({width: 137, height: 137});
     
     let handle: HTMLElement | null | undefined;
     let bb: any;

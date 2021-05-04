@@ -4,15 +4,15 @@ import useResize from './useResize';
 import useDrag from './useDrag';
 
 interface TransformHooks {
-    rect: Rect | undefined;
+    rect: Rect;
     drag_handler: (e: React.MouseEvent) => void;
     resizable: any;
 };
-const useTransform = (transformable: React.RefObject<HTMLElement>): TransformHooks => {
-    const [rect, setRect] = React.useState<Rect>(DEFAULT_RECT);
+const useTransform = (transformable: React.RefObject<HTMLElement>, initial_rect: Rect): TransformHooks => {
+    const [rect, setRect] = React.useState<Rect>(initial_rect ?? DEFAULT_RECT);
 
-    const resizeHooks = useResize(transformable.current);
-    const [dragPos, handleMouseDownDrag, isDragging] = useDrag(transformable.current);
+    const resizeHooks = useResize(transformable.current, initial_rect);
+    const [dragPos, handleMouseDownDrag, isDragging] = useDrag(transformable.current, initial_rect);
 
     // resolve rect using these side effects
     React.useEffect(() => {

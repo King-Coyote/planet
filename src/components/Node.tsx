@@ -13,14 +13,18 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     const [isEditing, setIsEditing] = React.useState(false);
     
     const transformable = React.useRef<HTMLDivElement>(null);
-    const transform = useTransform(transformable);
-    const rect = transform.rect ?? Types.DEFAULT_RECT;
+    const transform = useTransform(transformable, props.node.rect);
+    const rect = transform.rect;// ?? Types.DEFAULT_RECT;
+
+    let rectTimeoutId: any;
+    React.useEffect(() => {
+        rectTimeoutId = setTimeout(() => {
+            dispatch({type: 'SET_NODE_RECT', node_id: props.node.uuid, rect: rect});
+        }, 300);
+        return () => clearTimeout(rectTimeoutId);
+    }, [rect]);
 
     const textInput = React.useRef<HTMLDivElement>(null);
-
-    // React.useEffect(() => {
-    //     dispatch({type: 'SET_NODE_POS', node_id: props.node.uuid, position: last_translation});
-    // }, [last_translation]);
 
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);

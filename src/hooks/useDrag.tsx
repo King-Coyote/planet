@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pos, MaybeElement, DEFAULT_POS} from '../types/types';
+import {Pos, MaybeElement, DEFAULT_POS, Rect} from '../types/types';
 
 interface DragState {
     is_dragging: boolean;
@@ -7,12 +7,12 @@ interface DragState {
     origin_element_pos: Pos;
 };
 type UseDragReturn = [Pos, (e: React.MouseEvent) => void, boolean];
-const useDrag = (transformable: MaybeElement): UseDragReturn => {
-    const [pos, setPos] = React.useState<Pos>({x: 0, y: 0});
+const useDrag = (transformable: MaybeElement, initial_rect: Rect): UseDragReturn => {
+    const [pos, setPos] = React.useState<Pos>({x: initial_rect.left, y: initial_rect.top});
     const [state, setState] = React.useState<DragState>({
         is_dragging: false,
         origin_client_pos: DEFAULT_POS,
-        origin_element_pos: DEFAULT_POS,
+        origin_element_pos: pos,
     });
 
     const {origin_client_pos, origin_element_pos, is_dragging} = state;

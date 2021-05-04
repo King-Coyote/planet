@@ -1,5 +1,6 @@
-import {AppState, Action, Graph, Node} from './types/types';
+import {AppState, Action, Graph, Node, DEFAULT_RECT} from './types/types';
 import { v4 as uuidv4 } from 'uuid';
+import {object_string} from './utils'
 
 export const appstate_reducer = (state: AppState, action: Action) => {
     let new_state: AppState;
@@ -28,11 +29,8 @@ export const appstate_reducer = (state: AppState, action: Action) => {
         case 'NEW_NODE':
             new_state = new_node(state, action);
             break;
-        case 'SET_NODE_POS':
-            new_state = set_node_pos(state, action);
-            break;
-        case 'SET_NODE_SIZE':
-            new_state = set_node_size(state, action);
+        case 'SET_NODE_RECT':
+            new_state = set_node_rect(state, action);
             break;
         default:
             throw new Error();
@@ -96,8 +94,10 @@ const new_node = (state: AppState, action: Action): AppState => {
         uuid: uuid,
         text: '',
         neighbors: [],
-        size: {width: 100, height: 75},
-        position: action.position,
+        rect: {
+            ...DEFAULT_RECT,
+            ...action.position,
+        }
     };
     const updated_graph = {
         ...graph,
@@ -116,28 +116,12 @@ const new_node = (state: AppState, action: Action): AppState => {
     };
 }
 
-const set_node_pos = (state: AppState, action: Action): AppState => {
-    const {node_id, position} = action;
-    console.log(`setting node ${action.node_id} pos to ${position.x},${position.y}`);
+const set_node_rect = (state: AppState, action: Action): AppState => {
+    const {node_id, rect} = action;
+    console.log(`Setting node ${node_id} rect to ${object_string(rect)}`);
     const updated_node = {
         ...state.nodes[node_id],
-        position: position
-    };
-    return {
-        ...state,
-        nodes: {
-            ...state.nodes,
-            [node_id]: updated_node
-        }
-    };
-}
-
-const set_node_size = (state: AppState, action: Action): AppState => {
-    const {node_id, width, height} = action;
-    console.log(`Setting node ${node_id} width,height to ${width},${height}`);
-    const updated_node = {
-        ...state.nodes[node_id],
-        size: {width: width, height: height}
+        rect: rect,
     };
     return {
         ...state,
