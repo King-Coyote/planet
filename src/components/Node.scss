@@ -1,4 +1,4 @@
-$handle_size: 10px;
+$handle_size: 15px;
 
 .node {
     border: 1px solid black;
@@ -68,7 +68,8 @@ $handle_size: 10px;
     .resize-handle {
         width: $handle_size;
         height: $handle_size;
-        background-color: red;
+        background-color: rgba(255, 255, 255, 1);
+        border-radius: 100%;
         position: absolute;
         margin: 0;
         padding: 0;
