@@ -1,7 +1,6 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
-import {Size} from '../types/types';
 import useTransform from '../hooks/useTransform';
 
 interface INodeProps {
@@ -14,7 +13,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     
     const transformable = React.useRef<HTMLDivElement>(null);
     const transform = useTransform(transformable, props.node.rect);
-    const rect = transform.rect;// ?? Types.DEFAULT_RECT;
+    const rect = transform.rect;
 
     let rectTimeoutId: any;
     React.useEffect(() => {
@@ -67,7 +66,6 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
             <div></div>
             <div 
                 className='resize-handle handle-se' 
-                ref={transform.resizable.handle}
                 onMouseDown={transform.resizable.handler}
             ></div>
         </div>

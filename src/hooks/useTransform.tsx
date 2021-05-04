@@ -1,5 +1,5 @@
 import React from 'react';
-import {Rect, Pos, MaybeElement, DEFAULT_RECT} from '../types/types';
+import {Rect, DEFAULT_RECT} from '../types/types';
 import useResize from './useResize';
 import useDrag from './useDrag';
 
@@ -14,7 +14,6 @@ const useTransform = (transformable: React.RefObject<HTMLElement>, initial_rect:
     const resizeHooks = useResize(transformable.current, initial_rect);
     const [dragPos, handleMouseDownDrag, isDragging] = useDrag(transformable.current, initial_rect);
 
-    // resolve rect using these side effects
     React.useEffect(() => {
         setRect({
             ...resizeHooks.size,
@@ -22,21 +21,12 @@ const useTransform = (transformable: React.RefObject<HTMLElement>, initial_rect:
             top: dragPos.y
         });
     }, [resizeHooks.size, dragPos]);
-    
-    // React.useEffect(() => {
-    //     setRect({
-    //         ...rect,
-    //         left: dragPos.x,
-    //         top: dragPos.y
-    //     });
-    // }, [resizeHooks.rect, dragPos]);
 
     const hooks: TransformHooks = {
         rect: rect,
         drag_handler: handleMouseDownDrag,
         resizable: {
             handler: resizeHooks.handleMouseDown,
-            handles: resizeHooks.handle,
         },
     };
 

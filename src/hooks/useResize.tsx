@@ -9,7 +9,6 @@ interface ResizeState {
 interface ResizeHooks {
     size: Size;
     handleMouseDown: (e: React.MouseEvent<HTMLElement>) => void,
-    handle: HTMLElement | null | undefined;
     is_resizing: boolean;
 };
 const useResize = (transformable: MaybeElement, initial_rect: Rect): ResizeHooks => {
@@ -21,12 +20,7 @@ const useResize = (transformable: MaybeElement, initial_rect: Rect): ResizeHooks
     });
     const {is_resizing, client_origin, origin_size} = state;
 
-    
-    let handle: HTMLElement | null | undefined;
     let bb: any;
-    const ref = React.useCallback((ref: HTMLElement) => {
-            handle = ref;
-    }, [handle]);
 
     bb = transformable?.getBoundingClientRect();
 
@@ -78,7 +72,6 @@ const useResize = (transformable: MaybeElement, initial_rect: Rect): ResizeHooks
     return {
         size: size,
         handleMouseDown: handleMouseDown,
-        handle: handle,
         is_resizing: is_resizing,
     };
 };
