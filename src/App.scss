@@ -4,9 +4,11 @@
 @import './components/Graph.scss';
 @import './components/Node.scss';
 @import './components/DragBar.scss';
+@import './components/ContextMenu.scss';
 
 * {
   user-select: none;
+  margin: 0;
 
   &:focus {
     outline: none;

@@ -1,0 +1,26 @@
+
+.context-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: fixed;
+    padding: 6px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: white;
+
+    .context-menu-item {
+        width: 100%;
+        text-align: left;
+        background-color: white;
+        border-radius: 4px;
+
+        &:hover {
+            filter: brightness(80%);
+        }
+
+        p {
+            margin: 2px;
+        }
+    }
+}

@@ -2,6 +2,7 @@ import React from 'react';
 import { AppContext } from '../AppState';
 import * as Types from '../types/types';
 import useTransform from '../hooks/useTransform';
+import ContextMenu from './ContextMenu';
 
 interface INodeProps {
     node: Types.Node;
@@ -25,6 +26,39 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
 
     const textInput = React.useRef<HTMLDivElement>(null);
 
+    const [contextMenuState, setContextMenuState] = React.useState<any>({
+        is_open: false,
+        pos: {x: 0, y: 0}
+    });
+    const handleBlurContextMenu = (e: MouseEvent) => {
+        console.log('blured cm');
+        setContextMenuState({
+            ...contextMenuState,
+            is_open: false
+        });
+    };
+    const renderContextMenu = React.useCallback(() => {
+        if (!contextMenuState.is_open) {
+            return null;
+        }
+        return (
+            <ContextMenu 
+                pos={contextMenuState.pos}
+                handleBlur={handleBlurContextMenu}
+                items={[
+                    {
+                        label: 'Make subgraph', 
+                        on_click: () => console.log('surr')
+                    },
+                    {
+                        label: 'Delete', 
+                        on_click: () => console.log('surr')
+                    },
+                ]}
+            />
+        );
+    }, [contextMenuState]);
+
     const handleDoubleClick = (e: React.MouseEvent): void => {
         setIsEditing(true);
 
@@ -35,17 +69,27 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         //         textInput.current.setSelectionRange(end, end);
         //     }
         // }, 0);
-    }
+    };
+
+    const handleContextMenu = (e: React.MouseEvent): void => {
+        e.stopPropagation();
+        e.preventDefault();
+        setContextMenuState({
+            is_open: true,
+            pos: {x: e.clientX, y: e.clientY},
+        });
+    };
 
     const handleBlur = (e: React.FocusEvent): void => {
         setIsEditing(false);
-    }
+    };
 
     return (
         <div
             className="node" 
             id={props.node.uuid}
             onDoubleClick={handleDoubleClick}
+            onContextMenu={handleContextMenu}
             ref={transformable}
             style={{
                 top: rect.top,
@@ -68,6 +112,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
                 className='resize-handle handle-se' 
                 onMouseDown={transform.resizable.handler}
             ></div>
+            {renderContextMenu()}
         </div>
     );
 };
