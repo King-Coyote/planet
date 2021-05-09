@@ -30,14 +30,14 @@ const Graph: React.FC<IGraphProps> = (props: IGraphProps) => {
         dispatch({type: 'NEW_NODE', position: pos, graph_id: props.graph.uuid});
     }
 
-    const get_nodes = () => {
+    const getNodes = React.useCallback(() => {
         return props.graph.nodes.map(n => {
             const node = nodes[n];
             return (
                 <Node node={node}/>
             );
         });
-    }
+    }, [nodes]);
 
     return (
         <div className='graph'>
@@ -54,7 +54,7 @@ const Graph: React.FC<IGraphProps> = (props: IGraphProps) => {
                 className='graph-workarea' 
                 onContextMenu={handleRightClickWorkArea}
             >
-                {get_nodes()}
+                {getNodes()}
             </div>
         </div>
     );

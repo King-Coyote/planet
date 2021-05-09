@@ -30,6 +30,7 @@ export type AppStage = 'HOME' | 'GRAPH';
 
 export interface Node {
     uuid: string;
+    graph_id: string;
     text: string;
     rect: Rect,
     neighbors: string[]; // node ids

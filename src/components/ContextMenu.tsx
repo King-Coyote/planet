@@ -8,7 +8,7 @@ interface ContextMenuItem {
 
 interface IContextMenuProps {
     pos: Pos;
-    handleBlur: (e: MouseEvent) => void;
+    handleBlur: () => void;
     items: ContextMenuItem[];
 }
 
@@ -18,8 +18,8 @@ const ContextMenu: React.FC<IContextMenuProps> = (props: IContextMenuProps) => {
         e.stopPropagation();
     };
 
-    const handleBlur = (e: MouseEvent) => {
-        props.handleBlur(e);
+    const handleBlur = () => {
+        props.handleBlur();
     };
 
     React.useEffect(() => {
@@ -39,7 +39,12 @@ const ContextMenu: React.FC<IContextMenuProps> = (props: IContextMenuProps) => {
             {props.items.map(i => {
                 return (
                     <div 
-                        className='context-menu-item' onClick={i.on_click}>
+                        className='context-menu-item' 
+                        onClick={() => {
+                            i.on_click();
+                            handleBlur();
+                        }}
+                    >
                         <p>{i.label}</p>
                     </div>
                 );

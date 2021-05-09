@@ -30,8 +30,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
         is_open: false,
         pos: {x: 0, y: 0}
     });
-    const handleBlurContextMenu = (e: MouseEvent) => {
-        console.log('blured cm');
+    const handleBlurContextMenu = () => {
         setContextMenuState({
             ...contextMenuState,
             is_open: false
@@ -51,8 +50,8 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
                         on_click: () => console.log('surr')
                     },
                     {
-                        label: 'Delete', 
-                        on_click: () => console.log('surr')
+                        label: 'Delete',
+                        on_click: () => dispatch({type: 'DELETE_NODE', node_id: props.node.uuid})
                     },
                 ]}
             />
@@ -74,6 +73,7 @@ const Node: React.FC<INodeProps> = (props: INodeProps) => {
     const handleContextMenu = (e: React.MouseEvent): void => {
         e.stopPropagation();
         e.preventDefault();
+        console.log(`Opened cm on node with id ${props.node.uuid}`);
         setContextMenuState({
             is_open: true,
             pos: {x: e.clientX, y: e.clientY},

@@ -32,6 +32,9 @@ export const appstate_reducer = (state: AppState, action: Action) => {
         case 'SET_NODE_RECT':
             new_state = set_node_rect(state, action);
             break;
+        case 'DELETE_NODE':
+            new_state = delete_node(state, action);
+            break;
         default:
             throw new Error();
     }
@@ -92,6 +95,7 @@ const new_node = (state: AppState, action: Action): AppState => {
     const graph = state.graphs[action.graph_id];
     const new_node = {
         uuid: uuid,
+        graph_id: graph_id,
         text: '',
         neighbors: [],
         rect: {
@@ -131,4 +135,27 @@ const set_node_rect = (state: AppState, action: Action): AppState => {
             [node_id]: updated_node
         }
     };
+}
+
+const delete_node = (state: AppState, action: Action): AppState => {
+    const {node_id} = action;
+    console.log(`Deleting node with id ${node_id}`);
+    const node = state.nodes[action.node_id];
+    const graph = state.graphs[node.graph_id];
+    return {
+        ...state,
+        nodes: deleteFromState(state.nodes, node_id),
+        graphs: {
+            ...state.graphs,
+            [graph.uuid]: {
+                ...graph,
+                nodes: graph.nodes.filter((id) => id !== node_id)
+            }
+        }
+    };
+}
+
+// UTILITY FNS
+function deleteFromState(state: any, key: string): any {
+    return (({[key]: deleted, ...new_state}) => new_state)(state);
 }
